@@ -34,7 +34,7 @@ class Stopwatch extends Component {
     this.setState({ isStopwatchRun: true });
   };
 
-  saveTime = (time) => {
+  saveTime = () => {
     const newLaps = this.state.laps;
     newLaps.push({
       numLap: this.state.laps.length + 1,

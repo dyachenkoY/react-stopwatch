@@ -25,7 +25,7 @@ class Buttons extends Component {
         <button
           type="button"
           className={styles.button}
-          onClick={() => saveTime()}
+          onClick={saveTime}
         >
           Lap
         </button>

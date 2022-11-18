@@ -3,7 +3,7 @@ import React from "react";
 const Laps = ({ laps }) => {
   const lapList = laps.map(({ numLap, time }) => (
     <li id={numLap}>
-      Laps {numLap}: {time}
+      Lap {numLap}: {time}
     </li>
   ));
   return (
