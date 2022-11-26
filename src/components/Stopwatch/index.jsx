@@ -2,20 +2,21 @@ import React, { Component } from "react";
 import Buttons from "./Butons";
 import Laps from "./Lap";
 
+const initialState = { isStopwatchRun: false, timeInSeconds: 0, laps: [] };
+
+function padNumber(number, isPadded) {
+  return isPadded ? `0${number}` : number;
+}
 class Stopwatch extends Component {
-  state = {
-    isStopwatchRun: false,
-    timeInSeconds: 0,
-    laps: [],
-  };
+  state = structuredClone(initialState);
 
   componentWillUnmount() {
-    clearInterval(this.timeInterval);
+    this.stopTimer();
   }
 
   resetTimer = () => {
-    clearInterval(this.timeInterval);
-    this.setState({ isStopwatchRun: false, timeInSeconds: 0, laps: [] });
+    this.stopTimer();
+    this.setState(structuredClone(initialState));
   };
 
   stopTimer = () => {
@@ -30,42 +31,48 @@ class Stopwatch extends Component {
   };
 
   startTimer = () => {
-    this.timeInterval = setInterval(this.updateTime, 1000);
-    this.setState({ isStopwatchRun: true });
+    if (!this.isStopwatchRun) {
+      this.timeInterval = setInterval(this.updateTime, 1000);
+      this.setState({ isStopwatchRun: true });
+    }
   };
 
   saveTime = () => {
-    const newLaps = this.state.laps;
+    const newLaps = JSON.parse(JSON.stringify(this.state.laps));
     newLaps.push({
       numLap: this.state.laps.length + 1,
-      time: `${this.renderMinutes()}:${this.renderSeconds()}`,
+      time: this.renderTime(),
     });
     this.setState({ laps: newLaps });
   };
 
   renderSeconds = () => {
     const { timeInSeconds } = this.state;
-    const seconds = Math.floor(timeInSeconds % 60);
+    const seconds = timeInSeconds % 60;
 
-    if (seconds < 10) {
-      return `0${seconds}`;
-    }
-    return seconds;
+    return padNumber(seconds, seconds < 10);
   };
 
   renderMinutes = () => {
     const { timeInSeconds } = this.state;
     const minutes = Math.floor(timeInSeconds / 60);
 
-    if (minutes < 10) {
-      return `0${minutes}`;
-    }
-    return minutes;
+    return padNumber(minutes, minutes < 10);
   };
+
+  renderTime() {
+    const { timeInSeconds } = this.state;
+    const seconds = timeInSeconds % 60;
+    const minutes = Math.floor(timeInSeconds / 60);
+    const paddedSec = padNumber(seconds, seconds < 10);
+    const paddedMin = padNumber(minutes, minutes < 10);
+
+    return `${paddedMin}:${paddedSec}`;
+  }
 
   render() {
     const { isStopwatchRun, laps } = this.state;
-    const time = `${this.renderMinutes()}:${this.renderSeconds()}`;
+    const time = this.renderTime();
     return (
       <div>
         <h1>{time}</h1>
